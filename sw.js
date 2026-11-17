@@ -4,6 +4,19 @@ self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.o
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
   const u = new URL(e.request.url); if (e.request.method !== 'GET' || u.origin !== location.origin) return;
+  const rg = e.request.headers.get('range');   // 아이패드 사파리는 음원을 조각(Range)으로 달라 함 — 보관본 전체(200)를 주면 첫 재생이 안 나옴 → 그 조각만 206으로(저자 11-18 01:11)
+  if (rg) {
+    e.respondWith(caches.open(C).then(c => c.match(e.request, { ignoreSearch: true })).then(hit => {
+      if (!hit) return fetch(e.request);
+      return hit.arrayBuffer().then(buf => {
+        const m = /bytes=(\d*)-(\d*)/.exec(rg) || [], n = buf.byteLength;
+        let s0 = m[1] ? +m[1] : 0, s1 = m[2] ? +m[2] : n - 1; if (s1 >= n) s1 = n - 1;
+        if (s0 >= n) return new Response(null, { status: 416, headers: { 'Content-Range': 'bytes */' + n } });
+        return new Response(buf.slice(s0, s1 + 1), { status: 206, headers: { 'Content-Type': hit.headers.get('Content-Type') || 'audio/mpeg', 'Content-Range': 'bytes ' + s0 + '-' + s1 + '/' + n, 'Content-Length': String(s1 - s0 + 1), 'Accept-Ranges': 'bytes' } });
+      });
+    }).catch(() => fetch(e.request)));
+    return;
+  }
   if (e.request.mode === 'navigate' || /\/(index\.html)?$/.test(u.pathname)) {   // 책 페이지는 인터넷이 되면 늘 새것 먼저, 안 되면 보관본(조판 11-18 — 새 판인데 옛 페이지가 보이던 것)
     e.respondWith(caches.open(C).then(c => fetch(e.request, { cache: 'no-cache' }).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; }).catch(() => c.match(e.request, { ignoreSearch: true }))));
     return;
