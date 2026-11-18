@@ -2850,8 +2850,10 @@ function u(){B.hidden=!BS.length;B.textContent='← 돌아가기'+(BS.length>1?'
 function go(el,c){try{el.scrollIntoView({block:c?'center':'start'})}catch(e){el.scrollIntoView(c?false:true)}}
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a||a.closest('#back'))return;
  var t=document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));if(!t)return;e.preventDefault();
- if(window.TNSleave)window.TNSleave(t);BS.push(a);if(BS.length>30)BS.shift();u();go(t,false)},true);
-B.onclick=function(){if(!BS.length)return;var a=BS.pop();if(window.TNSleave)window.TNSleave(a);u();go(a,true);a.style.outline='3px solid #e08a00';setTimeout(function(){a.style.outline=''},1500)};})();</script>
+ if(window.TNSleave)window.TNSleave(t);BS.push(a);if(BS.length>30)BS.shift();try{history.pushState({tnsb:BS.length},'')}catch(e){}u();go(t,false)},true);
+function back(){if(!BS.length)return;var a=BS.pop();if(window.TNSleave)window.TNSleave(a);u();go(a,true);a.style.outline='3px solid #e08a00';setTimeout(function(){a.style.outline=''},1500)}
+B.onclick=function(){if(history.state&&history.state.tnsb){try{history.back();return}catch(e){}}back()};
+window.addEventListener('popstate',function(){back()});   /* 사파리 뒤로 가기(왼쪽 끝 밀기 · 단추)도 링크 하나씩 되돌아감 — 주소는 그대로(저자 11-18 22:24) */})();</script>
 <script>/* 곡 서랍 — 음원은 링크판의 audio/ 파일, 또는 이 기기 저장소(IndexedDB: 「받아 두기」 · 「파일에서 넣기」). 아이패드에서 재생은 누른 순간 바로 시작해야 해서 저장소 주소는 미리 풀어 둔다. 조판 11-17 */
 (function(){var P=window.TNS||{},DR=P.drawer||{},IDS=Object.keys(DR);if(!IDS.length)return;
 var S=document.getElementById('store'),MSG=document.getElementById('st-msg');S.hidden=false;
