@@ -34,7 +34,7 @@ a{color:var(--acc)}
  <h1>저자 고침 노트</h1>
  <p class="lead">곡을 고르면 악보와 연주가 열립니다. <b>펜슬로 긋고, 손가락으로 넘기고</b>, 악보를 손가락으로 한 번 누르면 그 마디(한 마디 앞)부터 · 두 번 누르면 멈춤. 필기는 기기에 저절로 저장되고, 「고침 보내기」로 그림 한 장(PNG)을 파일에 저장합니다.<br>
  <span class="ear">귀고침</span> 11-03 귀로 고친 판 · 표시 없는 곡은 동영상자료 판. <span class="has">필기</span> 이미 필기한 곡.</p>
- <p class="lead">연주 음원: 책에서 「파일에서 넣기」로 넣은 것을 같이 씁니다. 없으면 여기서 넣기 → <label class="btn" style="border:1px solid #cbd5e1;border-radius:8px;padding:3px 8px;cursor:pointer">여러 곡 넣기<input type="file" id="multi" accept="audio/*,.mp3" multiple hidden></label> <span id="amsg" class="dim"></span></p>
+ <p class="lead">연주 음원: 책 안에서 「파일에서 넣기」로 넣은 것을 같이 씁니다(책 안의 「저자 고침 노트」 링크로 열 때). 따로 열었으면 여기서 한 번에 넣기 — 받은 음원 164개를 모두 골라도 됩니다 → <label class="btn" style="border:1px solid #cbd5e1;border-radius:8px;padding:3px 8px;cursor:pointer">여러 곡 넣기<input type="file" id="multi" accept="audio/*,.mp3" multiple hidden></label> <span id="amsg" class="dim"></span></p>
  <div id="genres"></div>
 </div>
 <div id="song">
@@ -63,7 +63,8 @@ function dkeys(name,store){return odb(name,store).then(function(d){return new Pr
 /* ── 목록 ── */
 function list(){var h='';dkeys('tns-note','s').then(function(ks){D.genres.forEach(function(g){var ss=D.order.filter(function(id){return D.songs[id]&&D.songs[id].g===g});if(!ss.length)return;
  h+='<h2>'+g+'</h2><ul>'+ss.map(function(id){var s=D.songs[id];return '<li><a href="#s='+id+'">'+s.t+'</a><span class="tag">'+s.bpm+' · '+s.b+'</span>'+(s.ear?'<span class="ear">귀고침</span>':'')+(ks.indexOf(id)>=0?'<span class="has">필기</span>':'')+'</li>'}).join('')+'</ul>'});$('genres').innerHTML=h})}
-$('multi').onchange=function(e){var fs=[].slice.call(e.target.files||[]),n=0;Promise.all(fs.map(function(f){var id=Object.keys(D.songs).filter(function(k){return D.songs[k].au.split('/').pop()===f.name})[0];if(!id)return null;n++;return dput('tns-book','a',D.songs[id].au,f)})).then(function(){$('amsg').textContent=n+'곡 넣음'})};
+$('multi').onchange=function(e){var fs=[].slice.call(e.target.files||[]),n=0,v=0;$('amsg').textContent='넣는 중…';   /* 164개를 다 골라도 됨: 「곡id_full · _Eb · _Bb · _C」를 이름으로 알아보고 책과 같은 자리에 넣음(저자 15:37) */
+ Promise.all(fs.map(function(f){var m=/^((?:com|jis|sax|saxs)\d\d)_(full|Eb|Bb|C)(?: ?\(\d+\))?\.mp3$/i.exec(f.name.trim());if(!m||!D.songs[m[1].toLowerCase()])return null;var k='audio/'+m[1].toLowerCase()+'_'+(m[2].toLowerCase()==='full'?'full':m[2][0].toUpperCase()+m[2].slice(1).toLowerCase())+'.mp3';if(/_full/.test(k))n++;else v++;return dput('tns-book','a',k,f)})).then(function(){$('amsg').textContent='연주 '+n+'곡 · 반주 '+v+'개 넣음'+(fs.length>n+v?' (모르는 파일 '+(fs.length-n-v)+'개는 건너뜀)':'');list()})};
 /* ── 곡 ── */
 var S=null,ST=[],UNDO=[],TOOL='red',RATE=1,au=$('au'),MS=[],cur=-1,url=null;
 function route(){var m=/#s=(\w+)/.exec(location.hash);stopA();if(m&&D.songs[m[1]])open1(m[1]);else{S=null;$('song').style.display='none';$('list').style.display='';list()}}
