@@ -123,7 +123,7 @@ section.drawer .dmeta{font-family:var(--f-ui);font-size:calc(var(--k,1)*13px);co
 .dctl button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .dctl button.dpl{background:var(--acc);color:var(--accfg);border:0;font-weight:700;min-width:96px}
 .dgrp{display:inline-flex;gap:4px;align-items:center}.dkeys{color:var(--dim)}.dpos{margin-left:auto;color:var(--acc);font-weight:700}
-.dsc{margin:8px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}.dsc svg{width:100%;height:auto;max-width:none}.dsc g.measure{cursor:pointer}
+.pl.busy{background:#e08a00!important;color:#fff!important;border-color:#e08a00!important}.dsc{margin:8px 0;overflow-x:auto;-webkit-overflow-scrolling:touch}.dsc svg{width:100%;height:auto;max-width:none}.dsc g.measure{cursor:pointer}
 
 .dsc g.measure.cue{outline:none}.dsc g.measure.cue g.staff>path{stroke:#e08a00!important}.dsc g.measure.tapm g.staff>path{stroke:#2563eb!important}
 .dfirst{font-family:var(--f-ui);font-size:calc(var(--k,1)*14px)}.dfirst button{min-width:54px;border:1px solid var(--line);border-radius:12px;background:var(--bg);cursor:pointer}
@@ -155,7 +155,7 @@ section.drawer .dintro{background:var(--card);border:1px solid var(--line);borde
 </div>
 <button type="button" id="back" hidden>← 돌아가기</button>
 <h1>긴장과 해결</h1>
-<p class="dim" style="font-family:var(--f-ui);margin-top:0">알토 색소폰 라인 연습 · 천영호 · 시범판 · 만든 날 2026-11-19 09:03</p>
+<p class="dim" style="font-family:var(--f-ui);margin-top:0">알토 색소폰 라인 연습 · 천영호 · 시범판 · 만든 날 2026-11-19 09:52</p>
 <nav class="toc"><b>차례</b><ul><li><a href="#ch0">들어가며</a></li>
 <li><a href="#ch1">1장 · 해결 먼저 · 가이드 톤</a></li>
 <li><a href="#ch2">2장 · 코드가 바뀌는 순간</a></li>
@@ -3491,14 +3491,14 @@ function xbTick(){if(!XB||cur!==XB.id){xbHide();return}const R=XB,S=R.S,s=R.at+(
  for(let j=0;j+1<A.length;j++){if(u>=A[j][0]&&u<=A[j+1][0]){const d=A[j+1][0]-A[j][0];x=A[j][1]+(d>0?(u-A[j][0])/d:0)*(A[j+1][1]-A[j][1]);break}if(u>A[j+1][0])x=A[j+1][1]}
  let bar=N.box.querySelector('.xbar');if(!bar){bar=document.createElement('div');bar.className='xbar';N.box.appendChild(bar)}
  bar.style.display='block';bar.style.left=x+'px';bar.style.top=m.top+'px';bar.style.height=m.h+'px';requestAnimationFrame(xbTick)}
-function stop(){XB=null;xbHide();clearAll();Object.values(AU).forEach(a=>{a.pause();a.muted=false});if(cur){const b=document.querySelector('.pl[data-ex="'+cur+'"]');if(b)b.textContent='▶ 듣기'}cur=null}
+function stop(){XB=null;xbHide();clearAll();Object.values(AU).forEach(a=>{a.pause();a.muted=false});if(cur){const b=document.querySelector('.pl[data-ex="'+cur+'"]');if(b){b.textContent='▶ 듣기';b.classList.remove('busy')}}cur=null}
 const SEL={},RNG={};
 function play(id){stop();cur=id;const E=P.ex[id],k=SEL[id]||0,v=E.vers[k],SG=v.song||E.song,S=P.songs[SG],RT=+$('spd').value||1,withB=$('bk').checked;
  const b0=E.bars[0]-1,rg=(RNG[id]!=null&&RNG[id]>=0&&E.rng)?E.rng[RNG[id]]:null,r0=rg?rg[0]-1:b0,b1=rg?rg[1]:E.bars[1],PM=$('pre').value,pre=(PM!=='n'&&r0>0)?1:0,CNT=PM==='c'&&pre,st=S.bars[Math.max(0,r0-pre)],lo=rg?S.bars[r0]-.01:-1,hi=S.bars[b1]-.01;   // 구간 단추(익히기 · 실전)
  const BR=E.bar||48,sec=t=>{const b=Math.min(S.bars.length-2,b0+Math.floor(t/BR)),f=(t-(b-b0)*BR)/BR;return S.bars[b]+(S.bars[b+1]-S.bars[b])*f};
- document.querySelector('.pl[data-ex="'+id+'"]').textContent='■ 멈춤';
+ const PB=document.querySelector('.pl[data-ex="'+id+'"]');PB.textContent='… 불러오는 중';PB.classList.add('busy');
  const c=ctx(),a=withB?audioOf(SG):null;   /* 실전 조 판은 그 조 반주 */
- const go=at=>{const now=NOW()+.05;
+ const go=at=>{if(cur!==id)return;PB.textContent='■ 멈춤';PB.classList.remove('busy');const now=NOW()+.05;
   v.ev.forEach(e=>{const s=sec(e.t),d=(sec(e.t+e.d)-s)/RT,w=now+(s-at)/RT;if(w<now-.01||s<lo||s>=hi)return;voice(hz(e.p),w,d,.14);
 });   /* 음표 색칠 대신 파란 막대(저자 11-18 22:53 — 빨간 음표 = 블루 노트와 겹치지 않게) */
   XB={id:id,k:k,t0:now,at:at,RT:RT,b0:b0,BR:BR,S:S};requestAnimationFrame(xbTick);
@@ -3510,7 +3510,7 @@ function play(id){stop();cur=id;const E=P.ex[id],k=SEL[id]||0,v=E.vers[k],SG=v.s
   const run=()=>setTimeout(()=>go(a.currentTime),30), fix=()=>{try{a.currentTime=st}catch(e){} if(!a.seeking&&Math.abs(a.currentTime-st)<.3)run();else a.addEventListener('seeked',run,{once:true})};
   (p&&p.then?p:Promise.resolve()).then(()=>{if(Math.abs(a.currentTime-st)>.3)fix();else run()}).catch(()=>go(st))}
  else go(st)}
-setTimeout(()=>{Object.keys(P.songs).forEach(k=>{const a=audioOf(k);if(a){try{a.load()}catch(e){}}})},300);
+/* 시작 때 모든 곡 음원 미리 읽기 뺌 — 아이패드 열 · 멈춤(감사창 0948) */
 document.querySelectorAll('.pl').forEach(b=>b.onclick=()=>{const id=b.dataset.ex;if(cur===id){stop();return}play(id)});
 document.querySelectorAll('.rb').forEach(b=>b.onclick=()=>{const id=b.dataset.ex;RNG[id]=+b.dataset.r;document.querySelectorAll('.rb[data-ex="'+id+'"]').forEach(x=>x.classList.toggle('on',x===b));if(cur===id)play(id)});
 document.querySelectorAll('.vb').forEach(b=>b.onclick=()=>{const id=b.dataset.ex,k=+b.dataset.k;SEL[id]=k;
@@ -3600,7 +3600,7 @@ var GX=0;function glideX(el,dx){var x0=el.scrollLeft,t0=performance.now(),D=1000
 var ZL=[100,130,160,200,250],ZI={};try{ZI=JSON.parse(localStorage.getItem('tns-dz')||'{}')}catch(e){}
 function zset(s){var b=document.querySelector('.dsc[data-s="'+s+'"]');if(!b)return;var k=ZI[s]||0;b.querySelectorAll('svg').forEach(function(v){v.style.width=ZL[k]+'%'});try{localStorage.setItem('tns-dz',JSON.stringify(ZI))}catch(e){}if(lastM&&cur===s)follow(s,lastM)}
 document.querySelectorAll('.dz').forEach(function(b){b.onclick=function(){var s=b.dataset.s;ZI[s]=Math.max(0,Math.min(ZL.length-1,(ZI[s]||0)+(+b.dataset.d)));zset(s)}});IDS.forEach(zset);
-document.querySelectorAll('.dsc[data-src]').forEach(function(b){fetch(b.dataset.src).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){b.innerHTML=t;zset(b.dataset.s)}).catch(function(){b.innerHTML='<p class="dim">악보를 못 읽음 — 인터넷 되는 곳에서 책을 한 번 열어 주세요</p>'})});   /* 깃허브 판: 서랍 악보는 따로 파일(페이지 보관에 함께 들어감) */
+(function(){var Q=[].slice.call(document.querySelectorAll('.dsc[data-src]'));function ld(b){if(!b||b.dataset.ld)return;b.dataset.ld=1;fetch(b.dataset.src).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){b.innerHTML=t;zset(b.dataset.s)}).catch(function(){b.innerHTML='<p class="dim">악보를 못 읽음 — 인터넷 되는 곳에서 책을 한 번 열어 주세요</p>'})}window.TNSdl=function(s){ld(document.querySelector('.dsc[data-s="'+s+'"]'))};if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.unobserve(e.target);ld(e.target)}})},{rootMargin:'1500px 0px'});Q.forEach(function(b){io.observe(b)})}else Q.forEach(ld)})();   /* 화면 가까이 올 때만(감사창 0948 열) */   /* 깃허브 판: 서랍 악보는 따로 파일(페이지 보관에 함께 들어감) */
 function curIdx(){var D=DR[cur],t=A.currentTime,i=0;while(i+1<D.bars.length&&D.bars[i+1]<=t)i++;return i}
 var LT=0,LS=null;document.querySelectorAll('.dsc').forEach(function(box){box.addEventListener('click',function(e){var s=box.dataset.s,D=DR[s],x=e.clientX,y=e.clientY,now=Date.now();   /* 한 번 누르기 = 그 마디 한 마디 앞부터(누른 그 순간에 재생 — 아이패드는 누름 밖에서 소리를 못 냄) · 곧바로 한 번 더 = 멈춤 (11-17 13:24 고침) */
  if(now-LT<450&&LS===s){LT=0;stopD();return}LT=now;LS=s;
@@ -3610,14 +3610,15 @@ var LT=0,LS=null;document.querySelectorAll('.dsc').forEach(function(box){box.add
 function mbox(g){var L=1e9,Rr=-1e9,T=1e9,B=-1e9;g.querySelectorAll('g.staff > path').forEach(function(q){var z=q.getBoundingClientRect();if(z.width>10){L=Math.min(L,z.left);Rr=Math.max(Rr,z.right);T=Math.min(T,z.top);B=Math.max(B,z.bottom)}});if(L>Rr){var r=g.getBoundingClientRect();if(!r.width)return null;return {l:r.left,r:r.right,t:r.top,b:r.bottom}}return {l:L,r:Rr,t:T-28,b:B+28}}
 function idxOf(s,b){var i=DR[s].num.indexOf(String(b));return i<0?0:i}
 document.querySelectorAll('.dgo').forEach(function(b){b.onclick=function(){play(b.dataset.s,idxOf(b.dataset.s,b.dataset.b))}});
-document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-bar]');if(!a)return;var s=a.getAttribute('href').slice(6),D=DR[s];if(!D)return;
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-bar]');if(!a)return;var s=a.getAttribute('href').slice(6),D=DR[s];if(!D)return;if(window.TNSdl)TNSdl(s);
  var n=0;(function go(){var g=document.getElementById(D.m[idxOf(s,a.dataset.bar)]);if(!g||!g.getBoundingClientRect().height){if(n++<80)setTimeout(go,100);return}var c=document.querySelector('.dctl[data-s]')?140:100;window.scrollTo(0,g.getBoundingClientRect().top+window.pageYOffset-c);g.classList.add('cue');setTimeout(function(){g.classList.remove('cue')},4000)})()});   /* 서랍 악보를 받은 뒤 그 마디를 조작 막대 바로 아래로(저자 11-18 00:50 — 누르면 중간에 머물고 재생해야 움직이던 것) */
 })();</script>
 <script>/* 깃허브 판: 페이지를 기기에 보관(서비스 워커) — claude.ai 링크판에서는 막혀 있어 조용히 건너뜀 (조판 11-17) */
-try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!/claude\.ai|claudeusercontent/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}</script>
+try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!/claude\.ai|claudeusercontent/.test(location.hostname))(function(){var had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',function(){if(had&&!sessionStorage.getItem('tns-rl')){sessionStorage.setItem('tns-rl','1');location.reload()}});navigator.serviceWorker.register('sw.js').catch(function(){})})()}catch(e){}</script>
 <script>/* 깃허브 판: 예제 악보는 ex/chNN.json(장마다)에서 — 페이지 보관에 함께 들어감 (조판 11-17) */
 (function(){var L=[].slice.call(document.querySelectorAll('.exsc[data-src]'));if(!L.length)return;var U=[];L.forEach(function(b){if(U.indexOf(b.dataset.src)<0)U.push(b.dataset.src)});
-Promise.all(U.map(function(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){L.forEach(function(b){if(b.dataset.src===u&&j[b.dataset.ex]!=null)b.innerHTML=j[b.dataset.ex]})}).catch(function(){L.forEach(function(b){if(b.dataset.src===u)b.innerHTML='<p class="dim">악보를 못 읽음 — 인터넷 되는 곳에서 책을 한 번 열어 주세요</p>'})})})).then(function(){if(window.TNSbind)TNSbind();TNStrim()})})();window.TNStrim=function(){document.querySelectorAll('.exsc svg').forEach(function(s){try{if(s.dataset.trim||!s.viewBox||!s.viewBox.baseVal)return;var b=s.getBBox();if(b.width>0){var vb=s.viewBox.baseVal;s.setAttribute('viewBox',vb.x+' '+vb.y+' '+Math.min(vb.width,b.x+b.width+12)+' '+vb.height);s.dataset.trim=1}}catch(e){}})};document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.vb'))setTimeout(TNStrim,40)});</script>
+var J={};Promise.all(U.map(function(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){J[u]=j}).catch(function(){L.forEach(function(b){if(b.dataset.src===u)b.innerHTML='<p class="dim">악보를 못 읽음 — 인터넷 되는 곳에서 책을 한 번 열어 주세요</p>'})})})).then(function(){var y=window.pageYOffset+innerHeight/2,M=L.filter(function(b){return J[b.dataset.src]&&J[b.dataset.src][b.dataset.ex]!=null});M.sort(function(a,b){return Math.abs(a.getBoundingClientRect().top+window.pageYOffset-y)-Math.abs(b.getBoundingClientRect().top+window.pageYOffset-y)});   /* 보이는 곳부터 여섯 개씩 쉬어 가며(감사창 0948 열 · 멈춤) */
+(function step(){var k=M.splice(0,6);k.forEach(function(b){b.innerHTML=J[b.dataset.src][b.dataset.ex]});TNStrim();if(M.length)setTimeout(step,40);else if(window.TNSbind)TNSbind()})()})})();window.TNStrim=function(){document.querySelectorAll('.exsc svg').forEach(function(s){try{if(s.dataset.trim||!s.viewBox||!s.viewBox.baseVal)return;var b=s.getBBox();if(b.width>0){var vb=s.viewBox.baseVal;s.setAttribute('viewBox',vb.x+' '+vb.y+' '+Math.min(vb.width,b.x+b.width+12)+' '+vb.height);s.dataset.trim=1}}catch(e){}})};document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.vb'))setTimeout(TNStrim,40)});</script>
 <script>/* 화면을 돌려도 보던 자리 유지 — 돌리기 전 화면 위쪽에 보이던 문단 · 악보 줄을 기억했다가 다시 그 자리로(저자 11-18 01:20: 돌릴 때마다 다음 쪽으로 밀려감) */
 (function(){var A=null,W=innerWidth,lock=0,tm;
 function grab(){if(lock||innerWidth!==W)return;var y=Math.min(150,innerHeight/4),e=document.elementFromPoint(innerWidth/2,y);if(!e)return;
