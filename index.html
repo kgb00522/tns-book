@@ -155,7 +155,7 @@ section.drawer .dintro{background:var(--card);border:1px solid var(--line);borde
 </div>
 <button type="button" id="back" hidden>← 돌아가기</button>
 <h1>긴장과 해결</h1>
-<p class="dim" style="font-family:var(--f-ui);margin-top:0">알토 색소폰 라인 연습 · 천영호 · 시범판 · 만든 날 2026-11-21 12:08</p>
+<p class="dim" style="font-family:var(--f-ui);margin-top:0">알토 색소폰 라인 연습 · 천영호 · 시범판 · 만든 날 2026-11-19 15:39</p>
 <nav class="toc"><b>차례</b><ul><li><a href="#ch0">들어가며</a></li>
 <li><a href="#ch1">1장 · 해결 먼저 · 가이드 톤</a></li>
 <li><a href="#ch2">2장 · 코드가 바뀌는 순간</a></li>
@@ -3576,9 +3576,7 @@ function notes(D,t){var on=[];for(var k=0;k<D.ev.length;k++){var e=D.ev[k];if(e[
  var keep=[];LIT.forEach(function(g){if(on.indexOf(g.id)<0)g.classList.remove('play');else keep.push(g)});LIT=keep;
  on.forEach(function(id){if(!LIT.some(function(g){return g.id===id})){var g=document.getElementById(id);if(g){g.classList.add('play');LIT.push(g)}}})}
 (function(){var sp=document.getElementById('spd');if(sp)sp.addEventListener('change',function(){if(cur){var r=+sp.value||1;A.defaultPlaybackRate=r;A.playbackRate=r}})})();
-var TEND=null,TA=null,NOFOL=false,TB=null,SEEKN=0,WAIT=false;function stopD(){A.pause();WAIT=false;SEEKN++;A.muted=false;if(cur)btn(cur,false);clr();pbHide();cur=null;TEND=null;NOFOL=false;if(TB){TB.classList.remove('on');TB=null}}
-function playT(s,a,b,bt){play(s,0,Math.max(0,a-.1));TEND=b;TA=a;NOFOL=true;if(bt){TB=bt;bt.classList.add('on')}}
-document.querySelectorAll('.tpl').forEach(function(b){b.onclick=function(){if(TB===b&&!A.paused){stopD();return}stopD();playT(b.dataset.s,+b.dataset.a,+b.dataset.b,b)}});
+function stopD(){A.pause();if(cur)btn(cur,false);clr();pbHide();cur=null}
 /* 재생 막대 — 소리에 맞춰 악보 위를 왼쪽에서 오른쪽으로 지나가는 세로 막대(저자 11-18 10:37: 아이패드 11에서 빨간 음표만으로는 잘 안 보임). 마디 시작 · 음표마다 소리 난 시각 · 마디 끝을 이어 그 사이를 시간에 비례해 미끄러짐 */
 var PC={};function pbReset(){PC={}}window.addEventListener('resize',pbReset);document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.dz'))setTimeout(pbReset,50)});
 function pbHide(){document.querySelectorAll('.pbar').forEach(function(b){b.style.display='none'})}
@@ -3596,28 +3594,14 @@ function pbar(s,i,t){var P0=pbAnchors(s,i);if(!P0){pbHide();return}var A=P0.A,x=
  var b=P0.box.querySelector('.pbar');if(!b){b=document.createElement('div');b.className='pbar';P0.box.appendChild(b)}
  document.querySelectorAll('.pbar').forEach(function(o){if(o!==b)o.style.display='none'});
  b.style.display='block';b.style.left=Math.round(x)+'px';b.style.top=P0.top+'px';b.style.height=P0.h+'px'}
-var BL={},BLP={},BLF={};function blobOf(p){if(URLS[p])return Promise.resolve(URLS[p]);if(BL[p])return Promise.resolve(BL[p]);if(BLP[p])return BLP[p];
-     BLP[p]=fetch(p).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){Object.keys(BL).forEach(function(k){if(k!==p&&BL[k]!==A.dataset.u){try{URL.revokeObjectURL(BL[k])}catch(e){}delete BL[k];delete BLP[k]}});return BL[p]=URL.createObjectURL(b)}).catch(function(){BLF[p]=1;return null});return BLP[p]}
-    
-    function play(s,i,tx){document.querySelectorAll('audio').forEach(function(a){a.pause()});TEND=null;NOFOL=false;if(TB){TB.classList.remove('on');TB=null}if(cur&&cur!==s)btn(cur,false);
-     var D=DR[s],o=st(s),p=D.src[o.v==='full'?'full':o.k],t=tx!=null?Math.max(0,tx):Math.max(0,(D.bars[Math.max(0,i)]||0)-.15);
-     if(!URLS[p]&&P.ghPage){var ps0=document.querySelector('.dpos[data-s="'+s+'"]');if(ps0)ps0.textContent='이 기기에 '+p.split('/').pop()+' 없음 — 차례 아래 「파일에서 넣기」';btn(s,false);cur=null;return}
-     var u=URLS[p]||BL[p];if(A.dataset.p!==p||(u&&A.dataset.u!==u)){A.src=u||p;A.dataset.p=p;A.dataset.u=u||''}
-     cur=s;btn(s,true);A.muted=true;var RTd=+((document.getElementById('spd')||{}).value)||1;A.defaultPlaybackRate=RTd;A.playbackRate=RTd;A.preservesPitch=true;A.webkitPreservesPitch=true;
-     WAIT=true;var my=++SEEKN,t0=Date.now();
-     function ok(){var r=A.seekable;for(var k=0;k<r.length;k++)if(t>=r.start(k)-.05&&t<=r.end(k)-.05)return true;return false}
-     function diag(){var ps=document.querySelector('.dpos[data-s="'+s+'"]');if(ps)ps.textContent='읽는 중 · 옮길 구간 '+A.seekable.length+' · 상태 '+A.readyState+' · 통째 '+(BL[p]?'됨':BLF[p]?'못 받음':BLP[p]?'받는 중':'—')}
-     function done(){var wp=A.paused;A.muted=false;WAIT=false;btn(s,true);if(wp){var q3=A.play();if(q3&&q3.catch)q3.catch(function(){});requestAnimationFrame(tick)}}
-     function fail(){stopD();var J=document.getElementById('jsmsg');if(J){J.style.display='block';J.style.background='#fde68a';J.textContent='이 화면에서는 음원을 그 자리로 옮기지 못합니다 — 사파리로 열어 주세요(Finder에서 파일 오른쪽 클릭 → 다음으로 열기 → Safari).'}}
-     function go(){if(my!==SEEKN||cur!==s)return;
-      if(A.readyState>=2&&Math.abs(A.currentTime-t)<.5){done();return}
-      if(A.readyState>=1&&ok()){try{A.currentTime=t}catch(e){}if(Math.abs(A.currentTime-t)<.5){done();return}}
-      var el=Date.now()-t0;if(el>1500){if(!A.paused)A.pause();if(!u&&!BLP[p]&&!BL[p])통째();diag();if(BLF[p]||el>15000){fail();return}}
-      setTimeout(go,60)}
-     var q=A.play();if(q&&q.catch)q.catch(function(err){if(my!==SEEKN||(err&&err.name==='AbortError'))return;btn(s,false);var ps=document.querySelector('.dpos[data-s="'+s+'"]');if(ps)ps.textContent='소리를 못 냄 — ▶를 눌러 주세요'+(URLS[p]?'':' (음원 없음: 「파일에서 넣기」)')});
-     function 통째(){blobOf(p).then(function(b){if(my!==SEEKN||cur!==s||!b)return;A.src=b;A.dataset.u=b;A.muted=true;var q2=A.play();if(q2&&q2.catch)q2.catch(function(){})})}
-     go();tick()}
-    function tick(){if(!cur||A.paused){if(cur&&A.ended)stopD();return}if(WAIT){requestAnimationFrame(tick);return}var D=DR[cur],t=A.currentTime,i=0;while(i+1<D.bars.length&&D.bars[i+1]<=t)i++;
+function play(s,i){document.querySelectorAll('audio').forEach(function(a){a.pause()});if(cur&&cur!==s)btn(cur,false);
+ var D=DR[s],o=st(s),p=D.src[o.v==='full'?'full':o.k],t=Math.max(0,(D.bars[Math.max(0,i)]||0)-.15);
+ if(!URLS[p]&&P.ghPage){var ps0=document.querySelector('.dpos[data-s="'+s+'"]');if(ps0)ps0.textContent='이 기기에 '+p.split('/').pop()+' 없음 — 차례 아래 「파일에서 넣기」';btn(s,false);cur=null;return}   /* 깃허브 판: 서랍 음원은 기기에 넣어 둔 것만 */
+ if(A.dataset.p!==p){A.src=URLS[p]||p;A.dataset.p=p}cur=s;btn(s,true);A.muted=true;var RTd=+((document.getElementById('spd')||{}).value)||1;A.defaultPlaybackRate=RTd;A.playbackRate=RTd;A.preservesPitch=true;A.webkitPreservesPitch=true;   /* 서랍도 위 「빠르기」대로(저자 11-18 01:25) */
+ var seek=function(){try{A.currentTime=t}catch(e){}A.muted=false};
+ if(A.readyState>=1)seek();else A.addEventListener('loadedmetadata',seek,{once:true});
+ var q=A.play();if(q&&q.catch)q.catch(function(err){btn(s,false);var ps=document.querySelector('.dpos[data-s="'+s+'"]');if(ps)ps.textContent='소리를 못 냄 — ▶를 눌러 주세요'+(URLS[p]?'':' (음원 없음: 「파일에서 넣기」)')});tick()}
+function tick(){if(!cur||A.paused){if(cur&&A.ended)stopD();return}var D=DR[cur],t=A.currentTime,i=0;while(i+1<D.bars.length&&D.bars[i+1]<=t)i++;
  var g=document.getElementById(D.m[Math.min(i,D.m.length-1)]);if(g!==lastM){clr();if(g){g.classList.add('cur');lastM=g;follow(cur,g)}var ps=document.querySelector('.dpos[data-s="'+cur+'"]');if(ps)ps.textContent='m'+(D.num[i]||'')}
  if(D.ev)notes(D,t);pbar(cur,Math.min(i,D.m.length-1),t);requestAnimationFrame(tick)}
 A.addEventListener('pause',function(){if(cur&&A.paused&&!A.seeking)btn(cur,false)});
